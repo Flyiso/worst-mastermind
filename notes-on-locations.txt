@@ -1,0 +1,106 @@
+Spinners:
+(4 st- idx 0-1-2-3)
+
+h1:
+    screen_height-screen_width +
+    ((screen_width / 78) * 37)
+h2:
+    screen_height-screen_width +
+    ((screen_width / 78) * 58)
+
+w1:
+    (screen_width / 78) *
+    (14 + (idx * 13))
+
+w2:
+    (screen_width / 78) *
+    ((14 + 11) + (idx * 13))
+
+------------------------------------------
+Buttons:
+(4 st, idx: 0, 1, 2, 3)
+
+c_unpressed(h, w) :
+    screen_height-screen_width +
+    ((screen_width / 78) * 63),
+
+    (((screen_width / 78) *
+    (14 + (idx * 13)))
+    +
+    ((screen_widtht / 78) *
+    ((14 + 11) + (idx * 13))))
+
+    / 2
+
+c_pressed(h, w) :
+    screen_height-screen_width +
+    ((screen_width / 78) * 64),
+
+    (((screen_width / 78) *
+    (14 + (idx * 13)))
+    +
+    ((screen_width / 78) *
+    ((14 + 11) + (idx * 13))))
+
+    / 2
+
+radie-horizontal:
+    c(pressed or unpressed) +- ((screen_width/78) * 3.5)
+
+radie-vertical:
+    c(pressed or unpressed) +- (screen_width/78)
+
+if unpressed:
+    draw button pressed (color 1) (ellipse/cirkle)
+    draw rectangle (color 1):
+        h1: c-unpressed[h],
+        h2: c-pressed[h],
+        w1: c_unpressed[w] - radie-horizontal,
+        w2: c_unpressed[w] + radie-horizontal
+    draw button unpressed (color 2) (ellipse/circle)
+if pressed:
+        draw button unpressed (color 3) (ellipse/circle)
+
+------------------------------------------------------------
+
+Slider/arm
+
+slider_field:
+    h1: screen_height - screen_width +
+        ((screen_width / 78) * 14)
+    h2: screen_height-screen_width +
+        ((screen_width / 78) * 64)
+    w1: (screen_width / 78) * 70
+    w2: (screen_width / 78) * 76
+
+slider_button:
+    h1: (screen_height - screen_width +
+        ((screen_width / 78) * 14))
+        + location_offset
+    h2: (screen_height-screen_width +
+        ((screen_width / 78) * 20))
+        + location_offset
+    w1: (screen_width / 78) * 70
+    w2: (screen_width / 78) * 76
+
+Slder_arm(line):
+    start:
+        w: (screen_width / 78) * 71
+        h: (screen_height - screen_width) + (screen_width * 52)
+
+    end:
+        w: (screen_width / 78) * 73
+        h: (slider_button.h1 + slider_button.h2) / 2
+
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+
+ORDER TO DRAW EVERYTHING:
+0. guesses made/guess_grid
+1. background
+2. slider_arm
+   current_colors/spinners
+3. machine/forground img
+   slider_button
+4. buttons

@@ -158,4 +158,36 @@ TODO button drawing
 TODO spinner/random(?) logic
 TODO connect to kivy
 
+Notes:
+app will consist of 2 'main' sections-
+
+first- a grid in the bacground, displaying a grid specifying the users guesses, and the feedback to those guesses.
+this field is, apart from being scrollable, not interactive. since this field is, to a degree drawn/displayed under
+the other sectoion of the app, it also need to draw a few more rows on the grid than guessed, to allow the user to see
+their last guess without problem. it should also automatically make the users last guess visible (once the user makes
+a guess- meaning, when the lever is drawn, and weels have stopped spinning, in the section 2 of the app)
+
+second- the interactive section of the app-
+this section displays the machine, the current colors, buttons to 'lock' colors and a leaver to randomize unloced colors
+and make a guess from the result. This field is not scrollable. 
+
+
+layout/app-widget-design-plan:
+1.main app-all of screen- draw background here- do not adjust proportions on background, but put it at bottom of
+the field, and match the with of the image to the with of the devices screen
+2.guesses-field- somewhat overlap(or underlap to be precice) the main widget of the game. this has the same size as screen, and is
+scrollable- n of fields drawn =  
+    max([
+        (n of guesses_made)
+        (n of fields that fit in device heigth(size of fields has ratio 1:1, and is dictated by width(1/6 of width)) -6 )
+        ])
+    + 6 blank rows
+the columns in this field represent:
+1. guess number
+2. color_guess 1
+3. color_guess 2
+4. color_guess 3
+5. color_guess 4
+6. guess evaluation/ displaing one symbol when a color is present in correct sequence,
+   and one collor when both color and location is correct.
 '''

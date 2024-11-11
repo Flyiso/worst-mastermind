@@ -158,6 +158,8 @@ TODO button drawing
 TODO spinner/random(?) logic
 TODO connect to kivy
 
+TODO: Make testable on computer: while keeping porportions for phone devices. (use screen_h/2 as width?)
+
 Notes:
 app will consist of 2 'main' sections-
 
@@ -182,6 +184,10 @@ scrollable- n of fields drawn =
         (n of fields that fit in device heigth(size of fields has ratio 1:1, and is dictated by width(1/6 of width)) -6 )
         ])
     + 6 blank rows
+
+This makes the seventh last row the one to display, but also, makes scrolling as long as possible a working method for
+centering on most interesting row.
+
 the columns in this field represent:
 1. guess number
 2. color_guess 1

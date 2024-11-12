@@ -1,4 +1,7 @@
 import random
+import cv2
+import numpy as np
+
 
 class Spinner():
     def __init__(self, idx: int, colors: list, texture_size) -> None:
@@ -110,13 +113,23 @@ class GuessGrid:
     This should be a scrollable field.
     """
     def __init__(self, texture_size):
-        pass
+        self.screen_width, self.screen_height = texture_size[:2]
 
-    def draw_grid(self):
-        pass
-    
-    def draw_guesses(self, new_guess):
-        pass
+    def draw_grid(self, guesses):
+        img = np.zeros((self.screen_height, self.screen_width, 3), dtype=np.uint8)
+        num_columns = 6
+        square_size = self.screen_width // num_columns
+        num_rows = max([self.screen_height // square_size + 1, len(guesses)+6])
+        for row in range(num_rows):
+            for col in range(num_columns):
+                top_left = (col * square_size, row * square_size)
+                bottom_right = (top_left[0] + square_size, top_left[1] + square_size)
+                cv2.rectangle(img, top_left, bottom_right, (255, 255, 255), 1)
+        img = self.draw_guesses(img, guesses)
+        
+
+    def draw_guesses(self, img, guesses):
+        return img
 
 
 '''

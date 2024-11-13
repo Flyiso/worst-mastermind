@@ -215,10 +215,11 @@ class GuessGrid:
                 continue # or continue? break? 
             for col in range(1, self.num_columns-1):
                 center = (
-                    round(self.square_size+(((row+1)*self.square_size)/2)),
-                    round(((row+1)*self.square_size)/2))
+                    round((self.padding + (self.square_size*col))-self.square_size/2),
+                    round((self.padding + (self.square_size*(row+1)))-self.square_size/2)
+                          )
                 cv2.circle(img, center, round((self.square_size / 2) * 0.95),
-                           guesses[col][0][1][-1], -1)
+                           guesses[row][0][col-1][1], -1)
 
             center = (round(self.screen_width-self.square_size), round((row+1)*self.square_size))
             center_fourths = [(center[0]-(self.square_size/2), center[1]-(self.square_size/2)),
@@ -256,7 +257,7 @@ mock_guess = [[[['red',(255, 0, 0)],['blue',(0, 0, 255)],
               [[['green', (0, 255, 0)], ['red', (255, 0, 0)],
                ['green', (0, 255, 0)], ['red', (255, 0, 0)]],
               [1, 1, 1, 1]]]
-grid_class = GuessGrid([350, 600])
+grid_class = GuessGrid([350, 900])
 mock_grid = grid_class.draw_grid(mock_guess)
 cv2.imwrite('mock_grid.png', mock_grid)
 '''

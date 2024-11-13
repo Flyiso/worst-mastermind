@@ -215,7 +215,7 @@ class GuessGrid:
                 continue # or continue? break? 
             for col in range(1, self.num_columns-1):
                 center = (
-                    round((self.padding + (self.square_size*col))-self.square_size/2),
+                    round((self.padding + (self.square_size*(col+1)))-self.square_size/2),
                     round((self.padding + (self.square_size*(row+1)))-self.square_size/2)
                           )
                 cv2.circle(img, center, round((self.square_size / 2) * 0.95),

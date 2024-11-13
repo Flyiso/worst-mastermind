@@ -2,6 +2,13 @@ import random
 import cv2
 import numpy as np
 
+# TO MAKE SURE WORKS:
+# Spinner       -
+# SpinnerButton -
+# Colors        -
+# GameStatus    OK! :)
+# GuessGrid     OK! :)
+
 
 class Spinner():
     def __init__(self, idx: int, colors: list, texture_size) -> None:

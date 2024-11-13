@@ -5,7 +5,7 @@ import numpy as np
 # TO MAKE SURE WORKS:
 # Spinner       -
 # SpinnerButton -
-# Colors        -
+# Colors        OK! :)
 # GameStatus    OK! :)
 # GuessGrid     OK! :)
 
@@ -74,19 +74,19 @@ class Colors:
                         colors active in game
     self.correct_sequence: 2d list of [name(str), value_rgb(tuple)]
     """
-    color_options = {'red':(255,0,0), 'orange':(255,128,0),
-                     'yellow':(255,255,0), 'lime':(128,255,0),
-                     'green':(0,255,0), 'turquoise':(0, 255, 255), 
-                     'blue':(0,128,255), 'deepblue':(0,0,255),
-                     'purple':(127,0,255), 'magenta':(255,0,255),
-                     'pink':(255, 0, 127)}
 
     def __init__(self, n_colors: int = 5,
                  sequence_length: int = 4) -> None:
         """
         Determine active color in game, randomize the win sequence.
         """
-        self.sequence_length, self.n_colors = self.check_input(sequence_length, n_colors)
+        self.color_options = {'red':(255,0,0), 'orange':(255,128,0),
+                              'yellow':(255,255,0), 'lime':(128,255,0),
+                              'green':(0,255,0), 'turquoise':(0, 255, 255), 
+                              'blue':(0,128,255), 'deepblue':(0,0,255),
+                              'purple':(127,0,255), 'magenta':(255,0,255),
+                              'pink':(255, 0, 127)}
+        self.n_colors, self.sequence_length, = self.check_input(n_colors, sequence_length,)
         self.active_colors = self.get_active_colors(self.color_options, self.n_colors)
         self.correct_sequence = self.get_game_sequence()
     
@@ -101,7 +101,7 @@ class Colors:
         # make sure value is int and in range.
         if not isinstance(n_colors, int):
             n_colors = 5
-        elif n_colors < 2 or n_colors > len(self.color_options):
+        elif n_colors < 2 or n_colors > len(self.color_options.items()):
             n_colors = 5
         
         # Current layout only support sequence length of 4
@@ -138,6 +138,31 @@ class Colors:
             colors_choosen[color_name] = color_value
             del color_options[color_name]
         return colors_choosen
+
+colors = Colors(7, 4)
+print('7, 4')
+print(colors.active_colors)
+print(colors.correct_sequence)
+print(colors.color_options)
+print('.....')
+colors = Colors(3, 4)
+print('3, 4')
+print(colors.active_colors)
+print(colors.correct_sequence)
+print(colors.color_options)
+print('.....')
+colors = Colors(10, 4)
+print('10, 4')
+print(colors.active_colors)
+print(colors.correct_sequence)
+print(colors.color_options)
+print('.....')
+colors = Colors(9, 4)
+print('9, 4')
+print(colors.active_colors)
+print(colors.correct_sequence)
+print(colors.color_options)
+print('.....')
 
 class GameStatus:
     def __init__(self, correct: list) -> None:

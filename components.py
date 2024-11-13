@@ -187,6 +187,7 @@ class GuessGrid:
         """
         self.num_rows = round(max([self.screen_height // self.square_size + 1,
                                    len(guesses)+self.num_columns]))
+        self.screen_height = round((self.num_rows*self.square_size)+(self.padding*2))
         img = np.zeros(
             (max([self.screen_height, round(len(guesses)*self.square_size)]),
             self.screen_width, 3),
@@ -199,7 +200,7 @@ class GuessGrid:
             for col in range(self.num_columns+1):
                 cv2.line(img,
                          (round((col*self.square_size)+self.padding), 0+self.padding),
-                         (round((col*self.square_size)+self.padding), self.screen_height+self.padding), 
+                         (round((col*self.square_size)+self.padding), round(self.screen_height-self.padding)), 
                          (255, 255, 255), 1)
                 
         img = self.draw_guesses(img, guesses)
@@ -238,6 +239,42 @@ class GuessGrid:
 mock_correct = [['green', (0, 255, 0)], ['red', (255, 0, 0)], ['green', (0, 255, 0)], ['red', (255, 0, 0)]]
 
 mock_guess = [[[['red',(255, 0, 0)],['blue',(0, 0, 255)],
+                ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
+               [1,0,0]],
+              [[['blue',(0, 0, 255)],['blue',(0, 0, 255)],
+                ['red',(255, 0, 0)],['blue',(0, 0, 255)]],
+               [0]],
+              [[['green', (0, 255, 0)], ['red', (255, 0, 0)],
+                ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
+               [1,1,1]],
+              [[['red',(255, 0, 0)],['blue',(0, 0, 255)],
+                ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
+               [1,0,0]],
+              [[['blue',(0, 0, 255)], ['blue',(0, 0, 255)],
+                ['blue',(0, 0, 255)], ['blue',(0, 0, 255)]],
+               []],
+              [[['green', (0, 255, 0)], ['red', (255, 0, 0)],
+               ['green', (0, 255, 0)], ['red', (255, 0, 0)]],
+              [1, 1, 1, 1]],
+              [[['red',(255, 0, 0)],['blue',(0, 0, 255)],
+                ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
+               [1,0,0]],
+              [[['blue',(0, 0, 255)],['blue',(0, 0, 255)],
+                ['red',(255, 0, 0)],['blue',(0, 0, 255)]],
+               [0]],
+              [[['green', (0, 255, 0)], ['red', (255, 0, 0)],
+                ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
+               [1,1,1]],
+              [[['red',(255, 0, 0)],['blue',(0, 0, 255)],
+                ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
+               [1,0,0]],
+              [[['blue',(0, 0, 255)], ['blue',(0, 0, 255)],
+                ['blue',(0, 0, 255)], ['blue',(0, 0, 255)]],
+               []],
+              [[['green', (0, 255, 0)], ['red', (255, 0, 0)],
+               ['green', (0, 255, 0)], ['red', (255, 0, 0)]],
+              [1, 1, 1, 1]],
+              [[['red',(255, 0, 0)],['blue',(0, 0, 255)],
                 ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
                [1,0,0]],
               [[['blue',(0, 0, 255)],['blue',(0, 0, 255)],

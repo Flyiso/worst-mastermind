@@ -152,23 +152,49 @@ class GameStatus:
         :param guessed_sequence: list 2D, each item concist of name_str, color_tuple_rgb
         :return: 2D list. of inner lists- fist-list of guess(name_str,color_tuple_rgb), then-evaluation
         """
-        results = [0]
-        temp_corr = self.correct_sequence
-        for correct, guess in zip (self.correct_sequence,
-                                   guessed_sequence):
+        results = []
+        temp_corr = self.correct_sequence.copy()
+        for idx, (correct, guess) in enumerate(zip (self.correct_sequence,
+                                   guessed_sequence)):
             if correct == guess:
-                results.append(1)
-                temp_corr.remove(guess)
+                if idx in results:
+                    remove_idx = results.index(idx)
+                    results.remove(remove_idx)
+                results.append('x')
+                if guess in temp_corr:
+                    temp_corr.remove(guess)
+                    
             elif guess in temp_corr:
-                results.append(0)
+                results.append(idx)
                 temp_corr.remove(guess)
+        results = [1 if itm == 'x' else 0 for itm in results]
         results.sort()
-        self.guesses.append([guess, results])
+        self.guesses.append([guessed_sequence, results])
         if sum(results) == len(self.correct_sequence):
             self.game_won = True
         return self.guesses
 
-
+#def print_mock_status_stats(mock_status):
+#    print('..............')
+#    for guess in mock_status.guesses:
+#        print(f'    {guess}')
+#    print(mock_status.correct_sequence)
+#    last = 'none even remotely correct'
+#    if len(mock_status.guesses) > 0:
+#        last = mock_status.guesses[-1][-1]
+#    print(f'{mock_status.game_won}---{last}')
+#    print('..............')
+#mock_correct = [['green', (0, 255, 0)], ['red', (255, 0, 0)], ['green', (0, 255, 0)], ['red', (255, 0, 0)]]
+#mock_status = GameStatus(mock_correct)
+#print_mock_status_stats(mock_status)
+#mock_status.compare_to_sequence([['blue',(0, 0, 255)], ['blue',(0, 0, 255)], ['blue',(0, 0, 255)], ['blue',(0, 0, 255)]])
+#print_mock_status_stats(mock_status)
+#mock_status.compare_to_sequence([['blue',(0, 0, 255)],['blue',(0, 0, 255)], ['red',(255, 0, 0)],['blue',(0, 0, 255)]])
+#print_mock_status_stats(mock_status)
+#mock_status.compare_to_sequence([['red',(255, 0, 0)],['blue',(0, 0, 255)], ['green',(0, 255, 0)],['blue',(0, 0, 255)]])
+#print_mock_status_stats(mock_status)
+#mock_status.compare_to_sequence([['green', (0, 255, 0)], ['red', (255, 0, 0)], ['green', (0, 255, 0)], ['red', (255, 0, 0)]])
+#print_mock_status_stats(mock_status)
 class GuessGrid:
     """
     Draws grid / background displaying the users guesses
@@ -236,7 +262,6 @@ class GuessGrid:
                            round((self.square_size/4)*0.6), color_bgr, -1)
         return img
 
-mock_correct = [['green', (0, 255, 0)], ['red', (255, 0, 0)], ['green', (0, 255, 0)], ['red', (255, 0, 0)]]
 
 mock_guess = [[[['red',(255, 0, 0)],['blue',(0, 0, 255)],
                 ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
@@ -292,9 +317,8 @@ mock_guess = [[[['red',(255, 0, 0)],['blue',(0, 0, 255)],
               [[['green', (0, 255, 0)], ['red', (255, 0, 0)],
                ['green', (0, 255, 0)], ['red', (255, 0, 0)]],
               [1, 1, 1, 1]]]
-grid_class = GuessGrid([350, 900])
-mock_grid = grid_class.draw_grid(mock_guess)
-cv2.imwrite('mock_grid.png', mock_grid)
+#grid_class = GuessGrid([350, 900])
+#mock_grid = grid_class.draw_grid(mock_guess)
 '''
 ORDER TO DRAW EVERYTHING:
 0. guesses made/guess_grid

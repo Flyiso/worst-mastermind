@@ -208,9 +208,8 @@ class GuessGrid:
 
     def draw_guesses(self, img, guesses):
         for row in range(self.num_rows):
-            cv2.putText(img, str(row+1), (0, round(row+1*self.square_size)),
-                        round(self.fontScale), cv2.FONT_HERSHEY_SIMPLEX,
-                        (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.putText(img, str(row+1), (round(0+(self.padding*1.3)), round(((row+1)*self.square_size)+(self.padding*0.5))),
+                        1, self.fontScale, (255, 255, 255), 2, cv2.LINE_AA)
             if len(guesses) <= row:
                 continue # or continue? break? 
             for col in range(1, self.num_columns-1):
@@ -218,7 +217,7 @@ class GuessGrid:
                     round((self.padding + (self.square_size*(col+1)))-self.square_size/2),
                     round((self.padding + (self.square_size*(row+1)))-self.square_size/2)
                           )
-                cv2.circle(img, center, round((self.square_size / 2) * 0.95),
+                cv2.circle(img, center, round((self.square_size / 2) * 0.75),
                            guesses[row][0][col-1][1][::-1], -1)
 
             center = (round(((self.square_size*self.num_columns)+self.padding)-(self.square_size/2)),
@@ -230,14 +229,10 @@ class GuessGrid:
                                                     ]
             for idx, location in enumerate(center_fourths):
                 color_bgr = (0, 0, 255)
-                print('....')
-                print(guesses[row][1])
                 if (len(guesses[row][1])-1) >= idx:
-                    print(guesses[row][1][idx])
                     color_bgr = (255*abs(guesses[row][1][idx]-1), 255*guesses[row][1][idx], 0)
-                print(color_bgr)
                 cv2.circle(img, (round(location[0]), round(location[1])),
-                           round((self.square_size/4)*0.9), color_bgr, -1)
+                           round((self.square_size/4)*0.6), color_bgr, -1)
         return img
 
 mock_correct = [['green', (0, 255, 0)], ['red', (255, 0, 0)], ['green', (0, 255, 0)], ['red', (255, 0, 0)]]

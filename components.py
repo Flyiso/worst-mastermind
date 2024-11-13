@@ -221,18 +221,23 @@ class GuessGrid:
                 cv2.circle(img, center, round((self.square_size / 2) * 0.95),
                            guesses[row][0][col-1][1][::-1], -1)
 
-            center = (round(self.screen_width-self.square_size), round((row+1)*self.square_size))
-            center_fourths = [(center[0]-(self.square_size/2), center[1]-(self.square_size/2)),
-                              (center[0]+(self.square_size/2), center[1]-(self.square_size/2)),
-                              (center[0]-(self.square_size/2), center[1]+(self.square_size/2)),
-                              (center[0]+(self.square_size/2), center[1]+(self.square_size/2))
+            center = (round(((self.square_size*self.num_columns)+self.padding)-(self.square_size/2)),
+                      round((((row+1)*self.square_size)+self.padding)-self.square_size/2))
+            center_fourths = [(center[0]-(self.square_size/4), center[1]-(self.square_size/4)),
+                              (center[0]+(self.square_size/4), center[1]-(self.square_size/4)),
+                              (center[0]-(self.square_size/4), center[1]+(self.square_size/4)),
+                              (center[0]+(self.square_size/4), center[1]+(self.square_size/4))
                                                     ]
             for idx, location in enumerate(center_fourths):
                 color_bgr = (0, 0, 255)
+                print('....')
+                print(guesses[row][1])
                 if (len(guesses[row][1])-1) >= idx:
-                    color_bgr = (0, 255*guesses[row][1][idx], 255*abs(guesses[row][1][idx]-1))
+                    print(guesses[row][1][idx])
+                    color_bgr = (255*abs(guesses[row][1][idx]-1), 255*guesses[row][1][idx], 0)
+                print(color_bgr)
                 cv2.circle(img, (round(location[0]), round(location[1])),
-                           round(self.square_size/4), color_bgr, -1)
+                           round((self.square_size/4)*0.9), color_bgr, -1)
         return img
 
 mock_correct = [['green', (0, 255, 0)], ['red', (255, 0, 0)], ['green', (0, 255, 0)], ['red', (255, 0, 0)]]

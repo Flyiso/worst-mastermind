@@ -60,40 +60,101 @@ class SpinnerButton():
         self.is_locked = True
 
 class Colors:
-    def __init__(self, n_colors) -> None:
-        self.active_colors = self.get_active_colors(n_colors)
+    """
+    Manage colors in game-
+    Class to set the colors active and the sequence to win.
+    self.active_colors: dict item of x key-value pairs reprecenting
+                        colors active in game
+    self.correct_sequence: 2d list of [name(str), value_rgb(tuple)]
+    """
+    color_options = {'red':(255,0,0), 'orange':(255,128,0),
+                     'yellow':(255,255,0), 'lime':(128,255,0),
+                     'green':(0,255,0), 'turquoise':(0, 255, 255), 
+                     'blue':(0,128,255), 'deepblue':(0,0,255),
+                     'purple':(127,0,255), 'magenta':(255,0,255),
+                     'pink':(255, 0, 127)}
+
+    def __init__(self, n_colors: int = 5,
+                 sequence_length: int = 4) -> None:
+        """
+        Determine active color in game, randomize the win sequence.
+        """
+        self.sequence_length, self.n_colors = self.check_input(sequence_length, n_colors)
+        self.active_colors = self.get_active_colors(self.color_options, self.n_colors)
         self.correct_sequence = self.get_game_sequence()
     
-    def get_game_sequence(self):
+    def check_input(self, n_colors, sequence_length):
+        """
+        method to confirm valid input values and resets problmatic ones.
+
+        :param n_colors: int-how many different active colors in game
+        :param sequence_length: int-how many guesses per round(currently only 4 is supported)
+        :output: n_colors, sequence_length - as valid data types and within valid ranges
+        """
+        # make sure value is int and in range.
+        if not isinstance(n_colors, int):
+            n_colors = 5
+        elif n_colors < 2 or n_colors > len(self.color_options):
+            n_colors = 5
+        
+        # Current layout only support sequence length of 4
+        if not isinstance(sequence_length, int):
+            sequence_length = 4
+        elif sequence_length != 4:
+            sequence_length = 4
+
+        return n_colors, sequence_length
+    
+    def get_game_sequence(self) -> list:
+        """
+        Get 4 random colors form the ones active in game.
+
+        :return: list(2d) of list items[name, color_code_rgb]
+        """
         correct = []
-        for _ in range(4):
-            correct.append(random.choice(self.active_colors))
+        for _ in range(self.sequence_length):
+            color_name, color_value = random.choice(list(self.active_colors.items()))
+            correct.append([color_name, color_value])
         return correct
     
     @staticmethod
-    def get_active_colors(n_colors):
-        color_options = {'red':(255,0,0), 'orange':(255,128,0),
-                         'yellow':(255,255,0), 'lime':(128,255,0),
-                         'green':(0,255,0), 'turquoise':(0, 255, 255), 
-                         'blue':(0,128,255), 'deepblue':(0,0,255),
-                         'purple':(127,0,255), 'magenta':(255,0,255),
-                         'pink':(255, 0, 127)}
-        colors_choosen = []
-        for color in range(n_colors):
-            color = random.choice(color_options)
-            del color_options[color]
-            colors_choosen.append(color)
+    def get_active_colors(color_options, n_colors: int = 5,) -> dict:
+        """
+        Create dictionary of n_colors different colors color_name:color_rgb
+
+        :param n_colors: default = 5. int in range 2-11 the number of colors active in game.
+        :output: dictionary of the color items active
+        """
+        colors_choosen = {}
+        for _ in range(n_colors):
+            color_name, color_value = random.choice(list(color_options.items()))
+            colors_choosen[color_name] = color_value
+            del color_options[color_name]
         return colors_choosen
 
 class GameStatus:
-    def __init__(self) -> None:
+    def __init__(self, correct: list) -> None:
+        """
+        Initalize the game status tool- compare_to_sequence method evaluates guess compared
+        to the correct sequence.
+
+        :param correct: list of dict items, length 4, each item concist of a name and a color value(rgb)
+        """
         self.guesses = []
         self.game_won = False
+        self.correct_sequence = correct
 
-    def compare_to_sequence(self, correct_sequence, guessed_sequence):
+    def compare_to_sequence(self, guessed_sequence):
+        """
+        Compare guess made with the correct sequence. create list of 1 and 0,
+        where 1 is correct place and color, and 2 is correct color, not place.
+
+        :param guessed_sequence: list of 4 items, dict items- name:color value(rgb)
+        :return: 2D list. of inner lists- fist-list of guess, then-evaluation
+        """
         results = [0]
-        temp_corr = correct_sequence
-        for correct, guess in zip (correct_sequence,
+        temp_corr = self.correct_sequence
+        for correct, guess in zip (self.correct_sequence,
                                    guessed_sequence):
             if correct == guess:
                 results.append(1)
@@ -103,8 +164,9 @@ class GameStatus:
                 temp_corr.remove(guess)
         results.sort()
         self.guesses.append([guess, results])
-        if sum(results) == len(correct_sequence):
+        if sum(results) == len(self.correct_sequence):
             self.game_won = True
+        return self.guesses
 
 
 class GuessGrid:
@@ -113,24 +175,46 @@ class GuessGrid:
     This should be a scrollable field.
     """
     def __init__(self, texture_size):
+        self.num_columns = 6
         self.screen_width, self.screen_height = texture_size[:2]
+        self.square_size = self.screen_width // self.num_columns 
+        self.fontScale = min(self.square_size,self.square_size)/(25/1)
 
     def draw_grid(self, guesses):
-        img = np.zeros((self.screen_height, self.screen_width, 3), dtype=np.uint8)
-        num_columns = 6
-        square_size = self.screen_width // num_columns
-        num_rows = max([self.screen_height // square_size + 1, len(guesses)+6])
-        for row in range(num_rows):
-            for col in range(num_columns):
-                top_left = (col * square_size, row * square_size)
-                bottom_right = (top_left[0] + square_size, top_left[1] + square_size)
-                cv2.rectangle(img, top_left, bottom_right, (255, 255, 255), 1)
+        self.num_rows = max([self.screen_height // self.square_size + 1, len(guesses)+6])
+        img = np.zeros(
+            (max([self.screen_height, round(len(guesses)*self.square_size)]),
+            self.screen_width, 3),
+            dtype=np.uint8)
+        for row in range(self.num_rows):
+            cv2.line(img,
+                        (0, round(row*self.screen_width/6)),
+                        (self.screen_width, round(row*self.screen_width/6)),
+                        (255, 255, 255), 1)
+            for col in range(self.num_columns):
+                cv2.line(img,
+                         (col*self.screen_width/6, 0),
+                         (col*self.screen_width/6,self.screen_height), 
+                         (255, 255, 255), 1)
+                
         img = self.draw_guesses(img, guesses)
         
 
     def draw_guesses(self, img, guesses):
-        return img
-
+        for row in range(self.num_rows):
+            cv2.putText(img, str(row+1), (0, round(row+1*self.square_size)),
+                        cv2.FONT_HERSHEY_SIMPLEX, (255, 255, 255),
+                        cv2.LINE_AA, False)
+            if len(guesses) < row:
+                next # or continue?
+            for col in range(1, self.num_columns-1):
+                center = (
+                    round(self.square_size+(((row+1)*self.square_size)/2)),
+                    round(((row+1)*self.square_size)/2))
+                cv2.circle(img, center, round((self.square_size/2)*0.95),
+                           color, -1)
+                pass
+            # Draw the evaluation (split field in 4 sections)
 
 '''
 ORDER TO DRAW EVERYTHING:

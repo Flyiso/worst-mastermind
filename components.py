@@ -171,45 +171,48 @@ class GameStatus:
 
 class GuessGrid:
     """
-    Draws grid/background displaying the users guesses
+    Draws grid / background displaying the users guesses
     This should be a scrollable field.
     """
     def __init__(self, texture_size):
         self.num_columns = 6
         self.screen_width, self.screen_height = texture_size[:2]
-        self.square_size = self.screen_width // self.num_columns 
+        self.square_size = (self.screen_width*0.94) // self.num_columns
+        self.padding = round(self.screen_width*0.03)
         self.fontScale = min(self.square_size,self.square_size)/(25/1)
 
-    def draw_grid(self, guesses: list):
+    def draw_grid(self, guesses: list) -> np.ndarray:
         """
         draw guesses and evaluations of them on the grid.
         """
-        self.num_rows = max([self.screen_height // self.square_size + 1, len(guesses)+6])
+        self.num_rows = round(max([self.screen_height // self.square_size + 1,
+                                   len(guesses)+self.num_columns]))
         img = np.zeros(
             (max([self.screen_height, round(len(guesses)*self.square_size)]),
             self.screen_width, 3),
             dtype=np.uint8)
-        for row in range(self.num_rows):
+        for row in range(self.num_rows+1):
             cv2.line(img,
-                        (0, round(row*self.screen_width/6)),
-                        (self.screen_width, round(row*self.screen_width/6)),
+                        (0+self.padding, round((row*self.square_size)+self.padding)),
+                        (round(self.square_size*self.num_columns)+self.padding, round((row*self.square_size)+self.padding)),
                         (255, 255, 255), 1)
-            for col in range(self.num_columns):
+            for col in range(self.num_columns+1):
                 cv2.line(img,
-                         (col*self.screen_width/6, 0),
-                         (col*self.screen_width/6,self.screen_height), 
+                         (round((col*self.square_size)+self.padding), 0+self.padding),
+                         (round((col*self.square_size)+self.padding), self.screen_height+self.padding), 
                          (255, 255, 255), 1)
                 
         img = self.draw_guesses(img, guesses)
+        return img
         
 
     def draw_guesses(self, img, guesses):
         for row in range(self.num_rows):
             cv2.putText(img, str(row+1), (0, round(row+1*self.square_size)),
-                        cv2.FONT_HERSHEY_SIMPLEX, (255, 255, 255),
-                        cv2.LINE_AA, False)
-            if len(guesses) < row:
-                next # or continue? break? 
+                        round(self.fontScale), cv2.FONT_HERSHEY_SIMPLEX,
+                        (255, 255, 255), 2, cv2.LINE_AA)
+            if len(guesses) <= row:
+                continue # or continue? break? 
             for col in range(1, self.num_columns-1):
                 center = (
                     round(self.square_size+(((row+1)*self.square_size)/2)),
@@ -225,12 +228,37 @@ class GuessGrid:
                                                     ]
             for idx, location in enumerate(center_fourths):
                 color_bgr = (0, 0, 255)
-                if len(guesses[row][1]) >= idx:
+                if (len(guesses[row][1])-1) >= idx:
                     color_bgr = (0, 255*guesses[row][1][idx], 255*abs(guesses[row][1][idx]-1))
+                print(location)
+                print(f'({round(location[0])}, {round(location[1])})')
                 cv2.circle(img, (round(location[0]), round(location[1])),
-                           self.square_size//4, color_bgr, -1)
+                           round(self.square_size/4), color_bgr, -1)
         return img
 
+mock_correct = [['green', (0, 255, 0)], ['red', (255, 0, 0)], ['green', (0, 255, 0)], ['red', (255, 0, 0)]]
+
+mock_guess = [[[['red',(255, 0, 0)],['blue',(0, 0, 255)],
+                ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
+               [1,0,0]],
+              [[['blue',(0, 0, 255)],['blue',(0, 0, 255)],
+                ['red',(255, 0, 0)],['blue',(0, 0, 255)]],
+               [0]],
+              [[['green', (0, 255, 0)], ['red', (255, 0, 0)],
+                ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
+               [1,1,1]],
+              [[['red',(255, 0, 0)],['blue',(0, 0, 255)],
+                ['green',(0, 255, 0)],['blue',(0, 0, 255)]],
+               [1,0,0]],
+              [[['blue',(0, 0, 255)], ['blue',(0, 0, 255)],
+                ['blue',(0, 0, 255)], ['blue',(0, 0, 255)]],
+               []],
+              [[['green', (0, 255, 0)], ['red', (255, 0, 0)],
+               ['green', (0, 255, 0)], ['red', (255, 0, 0)]],
+              [1, 1, 1, 1]]]
+grid_class = GuessGrid([350, 600])
+mock_grid = grid_class.draw_grid(mock_guess)
+cv2.imwrite('mock_grid.png', mock_grid)
 '''
 ORDER TO DRAW EVERYTHING:
 0. guesses made/guess_grid

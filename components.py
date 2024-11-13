@@ -14,7 +14,7 @@ class Spinner():
     def __init__(self, idx: int, colors: dict, texture_size) -> None:
         self.colors = colors
         self.cuttent = self.colors[0]
-        # img to map to is square, with widh(smallest since runing in portrait) defining size
+        # img to map to is square, with widh(smallest since runing in portrait) defining si
         self.screen_width, self.screen_height = texture_size[0], texture_size[0]
         self.idx = idx
         # dimentions/locations currently assumes
@@ -26,10 +26,10 @@ class Spinner():
         self.is_spinnig = False
 
     def get_dimentions(self) -> list:
-        top = 0
-        bottom = self.screen_height
-        leftmost = 0
-        rightmost = self.screen_width
+        top = ((self.screen_width / 78) * 37)
+        bottom = ((self.screen_width / 78) * 58)
+        leftmost = ((self.screen_width / 78) * (14 + (self.idx * 13)))
+        rightmost = ((self.screen_width / 78) * ((14 + 11) + (self.idx * 13)))
         return top, bottom, leftmost, rightmost
     
     def draw_spinner(self):

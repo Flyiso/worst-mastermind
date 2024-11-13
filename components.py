@@ -11,10 +11,11 @@ import numpy as np
 
 
 class Spinner():
-    def __init__(self, idx: int, colors: list, texture_size) -> None:
+    def __init__(self, idx: int, colors: dict, texture_size) -> None:
         self.colors = colors
         self.cuttent = self.colors[0]
-        self.screen_width, self.screen_height = texture_size[:2]
+        # img to map to is square, with widh(smallest since runing in portrait) defining size
+        self.screen_width, self.screen_height = texture_size[0], texture_size[0]
         self.idx = idx
         # dimentions/locations currently assumes
         # top left corner of screen as origin.
@@ -25,15 +26,14 @@ class Spinner():
         self.is_spinnig = False
 
     def get_dimentions(self) -> list:
-        top = (self.screen_height-self.screen_width + ((self.screen_width / 78) * 37))
-        bottom = (self.screen_height-self.screen_width + ((self.screen_width / 78) * 58))
-        leftmost = ((self.screen_width / 78) * (14 + (self.idx * 13)))
-        rightmost = ((self.screen_width / 78) * ((14 + 11) + (self.idx * 13)))
+        top = 0
+        bottom = self.screen_height
+        leftmost = 0
+        rightmost = self.screen_width
         return top, bottom, leftmost, rightmost
     
     def draw_spinner(self):
         pass
-
 
 class SpinnerButton():
     def __init__(self, spinner) -> None:

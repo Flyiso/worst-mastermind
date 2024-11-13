@@ -149,8 +149,8 @@ class GameStatus:
         Compare guess made with the correct sequence. create list of 1 and 0,
         where 1 is correct place and color, and 2 is correct color, not place.
 
-        :param guessed_sequence: list of 4 items, dict items- name:color value(rgb)
-        :return: 2D list. of inner lists- fist-list of guess, then-evaluation
+        :param guessed_sequence: list 2D, each item concist of name_str, color_tuple_rgb
+        :return: 2D list. of inner lists- fist-list of guess(name_str,color_tuple_rgb), then-evaluation
         """
         results = [0]
         temp_corr = self.correct_sequence
@@ -180,7 +180,10 @@ class GuessGrid:
         self.square_size = self.screen_width // self.num_columns 
         self.fontScale = min(self.square_size,self.square_size)/(25/1)
 
-    def draw_grid(self, guesses):
+    def draw_grid(self, guesses: list):
+        """
+        draw guesses and evaluations of them on the grid.
+        """
         self.num_rows = max([self.screen_height // self.square_size + 1, len(guesses)+6])
         img = np.zeros(
             (max([self.screen_height, round(len(guesses)*self.square_size)]),
@@ -206,15 +209,27 @@ class GuessGrid:
                         cv2.FONT_HERSHEY_SIMPLEX, (255, 255, 255),
                         cv2.LINE_AA, False)
             if len(guesses) < row:
-                next # or continue?
+                next # or continue? break? 
             for col in range(1, self.num_columns-1):
                 center = (
                     round(self.square_size+(((row+1)*self.square_size)/2)),
                     round(((row+1)*self.square_size)/2))
-                cv2.circle(img, center, round((self.square_size/2)*0.95),
-                           color, -1)
-                pass
-            # Draw the evaluation (split field in 4 sections)
+                cv2.circle(img, center, round((self.square_size / 2) * 0.95),
+                           guesses[col][0][1][-1], -1)
+
+            center = (round(self.screen_width-self.square_size), round((row+1)*self.square_size))
+            center_fourths = [(center[0]-(self.square_size/2), center[1]-(self.square_size/2)),
+                              (center[0]+(self.square_size/2), center[1]-(self.square_size/2)),
+                              (center[0]-(self.square_size/2), center[1]+(self.square_size/2)),
+                              (center[0]+(self.square_size/2), center[1]+(self.square_size/2))
+                                                    ]
+            for idx, location in enumerate(center_fourths):
+                color_bgr = (0, 0, 255)
+                if len(guesses[row][1]) >= idx:
+                    color_bgr = (0, 255*guesses[row][1][idx], 255*abs(guesses[row][1][idx]-1))
+                cv2.circle(img, (round(location[0]), round(location[1])),
+                           self.square_size//4, color_bgr, -1)
+        return img
 
 '''
 ORDER TO DRAW EVERYTHING:

@@ -8,12 +8,25 @@ import numpy as np
 # Colors        OK! :)
 # GameStatus    OK! :)
 # GuessGrid     OK! :)
+movement = 5
+slowdown = 0.95
+print(movement)
+while movement > 0.1 and movement < 5.5:
+    movement = movement*slowdown
+    print(movement)
 
 
-class Spinner():
+class Spinner:
+    """"
+    Spinner object, containing one section that randomizes a value from a decided
+    dict of options, and animates this randomization. and one secton containing a
+    button that control the spinner object.
+    """
     def __init__(self, idx: int, colors: dict, texture_size) -> None:
         self.colors = colors
         self.cuttent = self.colors[0]
+        # how many percent of field dot is passed- start at middle/50%
+        self.current_percentile = 50
         # img to map to is square, with widh(smallest since runing in portrait) defining si
         self.screen_width, self.screen_height = texture_size[0], texture_size[0]
         self.idx = idx
@@ -24,6 +37,11 @@ class Spinner():
         self.button = SpinnerButton(self)
         self.locked = self.button.is_locked
         self.is_spinnig = False
+        # ramdomize individual slow-down speed for spinner
+        self.field_resistance = random.choice([0.950, 0.955, 0.960, 0.965, 0.970,
+                                               0.975, 0.980, 0.985, 0.990, 0.995])
+        # move 5 'spaces' per time unit
+        self.movement = 5
 
     def get_dimentions(self) -> list:
         top = ((self.screen_width / 78) * 37)
@@ -33,6 +51,14 @@ class Spinner():
         return top, bottom, leftmost, rightmost
     
     def draw_spinner(self):
+        # image of size of spinner field
+        np.zeros(round((self.screen_width/78)*13), round((self.screen_width/78)*21), 3)
+        present_colors = 0  # currently middle + 2 before and 2 after.
+        # movement is counted in percentiles- how many percent dot is passed per second
+        self.movement = self.movement * 0.75
+        # stop movement if threshold is reached
+        if self.movement < 0.001:
+            self.movement = 0
         pass
 
 class SpinnerButton():
@@ -139,31 +165,6 @@ class Colors:
             del color_options[color_name]
         return colors_choosen
 
-colors = Colors(7, 4)
-print('7, 4')
-print(colors.active_colors)
-print(colors.correct_sequence)
-print(colors.color_options)
-print('.....')
-colors = Colors(3, 4)
-print('3, 4')
-print(colors.active_colors)
-print(colors.correct_sequence)
-print(colors.color_options)
-print('.....')
-colors = Colors(10, 4)
-print('10, 4')
-print(colors.active_colors)
-print(colors.correct_sequence)
-print(colors.color_options)
-print('.....')
-colors = Colors(9, 4)
-print('9, 4')
-print(colors.active_colors)
-print(colors.correct_sequence)
-print(colors.color_options)
-print('.....')
-
 class GameStatus:
     def __init__(self, correct: list) -> None:
         """
@@ -206,27 +207,7 @@ class GameStatus:
             self.game_won = True
         return self.guesses
 
-#def print_mock_status_stats(mock_status):
-#    print('..............')
-#    for guess in mock_status.guesses:
-#        print(f'    {guess}')
-#    print(mock_status.correct_sequence)
-#    last = 'none even remotely correct'
-#    if len(mock_status.guesses) > 0:
-#        last = mock_status.guesses[-1][-1]
-#    print(f'{mock_status.game_won}---{last}')
-#    print('..............')
-#mock_correct = [['green', (0, 255, 0)], ['red', (255, 0, 0)], ['green', (0, 255, 0)], ['red', (255, 0, 0)]]
-#mock_status = GameStatus(mock_correct)
-#print_mock_status_stats(mock_status)
-#mock_status.compare_to_sequence([['blue',(0, 0, 255)], ['blue',(0, 0, 255)], ['blue',(0, 0, 255)], ['blue',(0, 0, 255)]])
-#print_mock_status_stats(mock_status)
-#mock_status.compare_to_sequence([['blue',(0, 0, 255)],['blue',(0, 0, 255)], ['red',(255, 0, 0)],['blue',(0, 0, 255)]])
-#print_mock_status_stats(mock_status)
-#mock_status.compare_to_sequence([['red',(255, 0, 0)],['blue',(0, 0, 255)], ['green',(0, 255, 0)],['blue',(0, 0, 255)]])
-#print_mock_status_stats(mock_status)
-#mock_status.compare_to_sequence([['green', (0, 255, 0)], ['red', (255, 0, 0)], ['green', (0, 255, 0)], ['red', (255, 0, 0)]])
-#print_mock_status_stats(mock_status)
+
 class GuessGrid:
     """
     Draws grid / background displaying the users guesses

@@ -56,9 +56,12 @@ class Spinner:
 
     def draw_spinner(self):
         # image of size of spinner field
+        if self.is_locked:
+            # just keep current image and value & return
+            pass
+        # update with randomized new color and animation for it
         np.zeros(round((self.screen_width/78)*13),
                  round((self.screen_width/78)*21), 3)
-        present_colors = 0  # currently middle + 2 before and 2 after.
         # movement counts in percentiles-  percent of dot is pass/time unit
         self.movement = self.movement * 0.75
         # stop movement if threshold is reached

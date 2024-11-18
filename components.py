@@ -54,7 +54,11 @@ class Spinner:
         rightmost = ((self.screen_width / 78) * ((14 + 11) + (self.idx * 13)))
         return top, bottom, leftmost, rightmost
 
-    def draw_spinner(self):
+    def update_spinner(self):
+        """
+        updates the individual spinner with new values for current color,
+        current colors location and current movement.e
+        """
         # image of size of spinner field
         if self.is_locked:
             # just keep current image and value & return
@@ -62,15 +66,38 @@ class Spinner:
         # update with randomized new color and animation for it
         np.zeros(round((self.screen_width/78)*13),
                  round((self.screen_width/78)*21), 3)
+
         # set updated index and location
         # idx x.50: current color is perfectly aligned to middle of field.
         self.idx = (self.idx+self.movement) % (len(self.colors.keys()))
+        self.current_color, self.current_value = list(
+            self.colors.items())[int(self.idx)]
+
         # movement counts in percentiles-  percent of dot is pass/time unit
         self.movement = self.movement * 0.75
         # stop movement if threshold is reached
         if self.movement < 0.001:
             self.movement = 0
-        pass
+
+        # Get the new frame:
+        spinner_frame = self.draw_spinner()
+        return spinner_frame
+
+    def draw_spinner(self):
+        """
+        Draws an image for the current values of spinner
+        """
+        upd_frame = np.zeros(round((self.screen_width/78)*13),
+                             round((self.screen_width/78)*21), 3)
+        loc_modifier = self.idx-int(self.idx)
+        circle_radius = round((upd_frame.shape[0]/2)*0.8)
+
+        # Draw current:
+        cv2.circle(upd_frame, (round((upd_frame.shape[1]/2)+loc_modifier),
+                               round(upd_frame.shape[0]/2)),
+                   circle_radius, self.current_value, -1)
+        # continue to draw surrounding-decide size of each dot + how many to display.
+        return upd_frame
 
 
 class SpinnerButton():

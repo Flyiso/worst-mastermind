@@ -45,7 +45,7 @@ class Spinner:
                                                0.965, 0.970, 0.975,
                                                0.980, 0.985, 0.990, 0.995])
         # move 5 'spaces' per time unit
-        self.movement = 5
+        self.movement = 50
 
     def get_dimensions(self) -> list:
         top = ((self.screen_width / 78) * 37)
@@ -62,6 +62,9 @@ class Spinner:
         # update with randomized new color and animation for it
         np.zeros(round((self.screen_width/78)*13),
                  round((self.screen_width/78)*21), 3)
+        # set updated index and location
+        # idx x.50: current color is perfectly aligned to middle of field.
+        self.idx = (self.idx+self.movement) % (len(self.colors.keys()))
         # movement counts in percentiles-  percent of dot is pass/time unit
         self.movement = self.movement * 0.75
         # stop movement if threshold is reached

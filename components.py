@@ -87,17 +87,39 @@ class Spinner:
         """
         Draws an image for the current values of spinner
         """
+        # create image to display visible and partly visible dots.
         upd_frame = np.zeros(round((self.screen_width/78)*13),
-                             round((self.screen_width/78)*21), 3)
+                             round((self.screen_width/78)*(13*5)), 3)
         loc_modifier = self.idx-int(self.idx)
         circle_radius = round((upd_frame.shape[0]/2)*0.8)
 
-        # Draw current:
-        cv2.circle(upd_frame, (round((upd_frame.shape[1]/2)+loc_modifier),
-                               round(upd_frame.shape[0]/2)),
-                   circle_radius, self.current_value, -1)
-        # continue to draw surrounding-decide size of each dot + how many to display.
+        # NOTE: frame status is represented by decimal value-
+        #       int(nr) is index of color currently the 'in the middle/active'
+        #       decimal represents the location- .5 == perfectly in middle
+        #       the frame to draw on fit 5 dot'spaces' total.
+
+        center_w = round(upd_frame.shape[0]/2)
+        draw_colors = self.get_color_codes_listed(5)
+        for n in range(0, 5):
+            center_h = round((((upd_frame.shape[1]/5) * n) +
+                              (upd_frame.shape[1]/5)) * loc_modifier)
+            cv2.circle(upd_frame,
+                       (center_w, center_h), circle_radius,
+                       draw_colors[n], -1)
+
+        # continue to draw surrounding-decide size of each + amount to display.
         return upd_frame
+
+    def get_color_codes_listed(self, nr_colors: int) -> list:
+        """
+        Return a list (length nr_colors), of color codes to draw.
+
+        :param nr_colors: int, odd value. how many colors to add to list.
+        :return: list of color codes, middle one is active color.
+        """
+        colors = []
+        # get the colors and add to list
+        return colors
 
 
 class SpinnerButton():

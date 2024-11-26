@@ -117,7 +117,8 @@ class Spinner:
         :param nr_colors: int, odd value. how many colors to add to list.
         :return: list of color codes, middle one is active color.
         """
-        colors = []
+        rnge = nr_colors // 2
+        colors = self.colors.values()[int(self.idx)-rnge:int(self.idx)+rnge]
         # get the colors and add to list
         return colors
 

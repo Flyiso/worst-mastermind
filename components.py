@@ -87,9 +87,11 @@ class Spinner:
         """
         Draws an image for the current values of spinner
         """
+        # temporary/not static later on?
+        n_colors = 5
         # create image to display visible and partly visible dots.
         upd_frame = np.zeros(round((self.screen_width/78)*13),
-                             round((self.screen_width/78)*(13*5)), 3)
+                             round((self.screen_width/78)*(13*n_colors)), 3)
         loc_modifier = self.idx-int(self.idx)
         circle_radius = round((upd_frame.shape[0]/2)*0.8)
 
@@ -100,7 +102,7 @@ class Spinner:
 
         center_w = round(upd_frame.shape[0]/2)
         draw_colors = self.get_color_codes_listed(5)
-        for n in range(0, 5):
+        for n in range(0, n_colors):
             center_h = round((((upd_frame.shape[1]/5) * n) +
                               (upd_frame.shape[1]/5)) * loc_modifier)
             cv2.circle(upd_frame,
@@ -118,7 +120,7 @@ class Spinner:
         :return: list of color codes, middle one is active color.
         """
         rnge = nr_colors // 2
-        colors = self.colors.values()[int(self.idx)-rnge:int(self.idx)+rnge]
+        colors = self.colors.values()[int(self.idx)-rnge:int(self.idx)+(rnge+1)]
         # get the colors and add to list
         return colors
 

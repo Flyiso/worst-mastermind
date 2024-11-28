@@ -24,14 +24,19 @@ class Spinner:
     and one section containing a
     button that control the spinner object.
     """
-    def __init__(self, idx: int, colors: dict, texture_size) -> None:
+    def __init__(self, idx: float, colors: dict,
+                 texture_size, n_colors: int = 5) -> None:
         self.colors = colors
-        self.current = self.colors[0]
+        self.current_key, self.current_value = \
+            list(self.colors.keys())[int(idx)], list(self.colors.values())[int(idx)]
         # how many percent of field dot is passed- start at middle/50%
         self.current_percentile = 50
         # img to map to is square, with width(smallest since portrait layout)
         self.screen_width, self.screen_height = \
             texture_size[0], texture_size[0]
+        self.spinner_width, self.spinner_height = \
+            round((self.screen_width/78)*13), \
+            round((self.screen_width/78)*(13*n_colors))
         self.idx = idx
         # dimensions/locations currently assumes
         # top left corner of screen as origin.
@@ -90,26 +95,24 @@ class Spinner:
         # temporary/not static later on?
         n_colors = 5
         # create image to display visible and partly visible dots.
-        upd_frame = np.zeros(round((self.screen_width/78)*13),
-                             round((self.screen_width/78)*(13*n_colors)), 3)
+        upd_frame = np.zeros([self.spinner_height,
+                             self.spinner_width, 3])
         loc_modifier = self.idx-int(self.idx)
-        circle_radius = round((upd_frame.shape[0]/2)*0.8)
+        circle_radius = round((upd_frame.shape[1]/2)*0.8)
 
         # NOTE: frame status is represented by decimal value-
         #       int(nr) is index of color currently the 'in the middle/active'
         #       decimal represents the location- .5 == perfectly in middle
         #       the frame to draw on fit 5 dot'spaces' total.
 
-        center_w = round(upd_frame.shape[0]/2)
+        center_w = round(upd_frame.shape[1]/2)
         draw_colors = self.get_color_codes_listed(5)
         for n in range(0, n_colors):
-            center_h = round((((upd_frame.shape[1]/5) * n) +
-                              (upd_frame.shape[1]/5)) * loc_modifier)
+            center_h = round((((upd_frame.shape[0]/5) * n) +
+                              ((upd_frame.shape[0]/5)) * loc_modifier))
             cv2.circle(upd_frame,
                        (center_w, center_h), circle_radius,
                        draw_colors[n], -1)
-
-        # continue to draw surrounding-decide size of each + amount to display.
         return upd_frame
 
     def get_color_codes_listed(self, nr_colors: int) -> list:
@@ -119,8 +122,9 @@ class Spinner:
         :param nr_colors: int, odd value. how many colors to add to list.
         :return: list of color codes, middle one is active color.
         """
-        rnge = nr_colors // 2
-        colors = self.colors.values()[int(self.idx)-rnge:int(self.idx)+(rnge+1)]
+        rge = nr_colors // 2
+        colors = \
+            list(self.colors.values())[int(self.idx)-rge:int(self.idx)+(rge+1)]
         # get the colors and add to list
         return colors
 
@@ -516,3 +520,7 @@ the columns in this field represent:
 when a color is present in correct sequence,
    and one color when both color and location is correct.
 '''
+colors = Colors(6, 4)
+spinner = Spinner(2.5, colors.active_colors, (300, 900, 3))
+img = spinner.draw_spinner()
+cv2.imwrite('spinner_img.png', img)

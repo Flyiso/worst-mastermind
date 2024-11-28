@@ -113,6 +113,7 @@ class Spinner:
             cv2.circle(upd_frame,
                        (center_w, center_h), circle_radius,
                        draw_colors[n], -1)
+        upd_frame = self.add_motion_effects(upd_frame)
         return upd_frame
 
     def get_color_codes_listed(self, nr_colors: int = 5) -> list:
@@ -136,6 +137,24 @@ class Spinner:
             if start > end else \
             list(self.colors.keys())[start:end]
         return colors[::-1]
+
+    def add_motion_effects(self, frame):
+        """
+        apply vertical blur and change proportions to
+        enhance animation effect. adjusts the effects
+        by how fast it is moving.
+
+        :param frame: frame to apply effects to
+        :output: frame with effects
+        """
+        # Blur effect:
+        kernel_height = 251  # Maximum height of the blur kernel (odd number)
+        kernel_height = max(3, int(self.movement * kernel_height) | 1)
+        kernel_size = (1, kernel_height)
+        frame = cv2.blur(frame, kernel_size)
+        # stretch(?):
+
+        return frame
 
 
 class SpinnerButton():

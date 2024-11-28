@@ -8,12 +8,6 @@ import numpy as np
 # Colors        OK! :)
 # GameStatus    OK! :)
 # GuessGrid     OK! :)
-movement = 5
-slowdown = 0.95
-print(movement)
-while movement > 0.1 and movement < 5.5:
-    movement = movement*slowdown
-    print(movement)
 
 
 class Spinner:
@@ -43,14 +37,14 @@ class Spinner:
         self.top, self.bottom, \
             self.leftmost, self.rightmost = self.get_dimensions()
         self.button = SpinnerButton(self)
-        self.locked = self.button.is_locked
+        self.is_locked = self.button.is_locked
         self.is_spinning = False
         # randomize individual slow-down speed for spinner
         self.field_resistance = random.choice([0.950, 0.955, 0.960,
                                                0.965, 0.970, 0.975,
                                                0.980, 0.985, 0.990, 0.995])
         # move 5 'spaces' per time unit
-        self.movement = 50
+        self.movement = 73
 
     def get_dimensions(self) -> list:
         top = ((self.screen_width / 78) * 37)
@@ -69,12 +63,12 @@ class Spinner:
             # just keep current image and value & return
             pass
         # update with randomized new color and animation for it
-        np.zeros(round((self.screen_width/78)*13),
-                 round((self.screen_width/78)*21), 3)
+        np.zeros([round((self.screen_width/78)*13),
+                 round((self.screen_width/78)*21), 3])
 
         # set updated index and location
         # idx x.50: current color is perfectly aligned to middle of field.
-        self.idx = (self.idx+self.movement) % (len(self.colors.keys()))
+        self.idx = (self.idx+self.movement) % (len(self.colors.keys())-1)
         self.current_color, self.current_value = list(
             self.colors.items())[int(self.idx)]
 
@@ -115,17 +109,21 @@ class Spinner:
                        draw_colors[n], -1)
         return upd_frame
 
-    def get_color_codes_listed(self, nr_colors: int) -> list:
+    def get_color_codes_listed(self, nr_colors: int = 5) -> list:
         """
         Return a list (length nr_colors), of color codes to draw.
 
         :param nr_colors: int, odd value. how many colors to add to list.
         :return: list of color codes, middle one is active color.
         """
-        rge = nr_colors // 2
+        rng = nr_colors // 2
+        start = ((int(self.idx))-rng) % (len(list(self.colors.keys())))
+        end = (((int(self.idx))+rng) % (len(list(self.colors.keys()))))+1
         colors = \
-            list(self.colors.values())[int(self.idx)-rge:int(self.idx)+(rge+1)]
-        # get the colors and add to list
+            list(self.colors.values())[start:] + \
+            list(self.colors.values())[:end] \
+            if start > end else \
+            list(self.colors.values())[start:end]
         return colors
 
 
@@ -522,5 +520,6 @@ when a color is present in correct sequence,
 '''
 colors = Colors(6, 4)
 spinner = Spinner(2.5, colors.active_colors, (300, 900, 3))
+spinner.update_spinner()
 img = spinner.draw_spinner()
 cv2.imwrite('spinner_img.png', img)

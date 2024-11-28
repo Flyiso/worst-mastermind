@@ -20,6 +20,7 @@ class Spinner:
     """
     def __init__(self, idx: float, colors: dict,
                  texture_size, n_colors: int = 5) -> None:
+        self.updates = 0
         self.colors = colors
         self.current_key, self.current_value = \
             list(self.colors.keys())[int(idx)], list(self.colors.values())[int(idx)]
@@ -44,7 +45,7 @@ class Spinner:
                                                0.965, 0.970, 0.975,
                                                0.980, 0.985, 0.990, 0.995])
         # move 5 'spaces' per time unit
-        self.movement = 73
+        self.movement = 0.05
 
     def get_dimensions(self) -> list:
         top = ((self.screen_width / 78) * 37)
@@ -68,18 +69,23 @@ class Spinner:
 
         # set updated index and location
         # idx x.50: current color is perfectly aligned to middle of field.
-        self.idx = (self.idx+self.movement) % (len(self.colors.keys())-1)
+        movement = 0.75
+        if self.updates >= 60:
+            movement = self.movement
+        self.idx = (self.idx+movement) % (len(self.colors.keys()))
         self.current_color, self.current_value = list(
             self.colors.items())[int(self.idx)]
 
         # movement counts in percentiles-  percent of dot is pass/time unit
-        self.movement = self.movement * 0.75
+        if self.updates >= 60:
+            self.movement = self.movement * 0.98
         # stop movement if threshold is reached
         if self.movement < 0.001:
             self.movement = 0
 
         # Get the new frame:
         spinner_frame = self.draw_spinner()
+        self.updates += 1
         return spinner_frame
 
     def draw_spinner(self):
@@ -124,7 +130,12 @@ class Spinner:
             list(self.colors.values())[:end] \
             if start > end else \
             list(self.colors.values())[start:end]
-        return colors
+        self.names = \
+            list(self.colors.keys())[start:] + \
+            list(self.colors.keys())[:end] \
+            if start > end else \
+            list(self.colors.keys())[start:end]
+        return colors[::-1]
 
 
 class SpinnerButton():
@@ -520,6 +531,14 @@ when a color is present in correct sequence,
 '''
 colors = Colors(6, 4)
 spinner = Spinner(2.5, colors.active_colors, (300, 900, 3))
-spinner.update_spinner()
-img = spinner.draw_spinner()
-cv2.imwrite('spinner_img.png', img)
+names_now = []
+for n in range(500):
+    img = spinner.update_spinner()
+    cv2.imwrite('spinner_img.png', img)
+    cv2.imwrite(f'spinner_test_imgs/{n}.png', img)
+    if names_now != spinner.names:
+        print(spinner.names, spinner.updates)
+    names_now = spinner.names
+    input(f'next? ({spinner.idx})')
+print('')
+print(list(spinner.colors.keys()))

@@ -23,7 +23,8 @@ class Spinner:
         self.updates = 0
         self.colors = colors
         self.current_key, self.current_value = \
-            list(self.colors.keys())[int(idx)], list(self.colors.values())[int(idx)]
+            list(self.colors.keys())[int(idx)], \
+            list(self.colors.values())[int(idx)]
         # how many percent of field dot is passed- start at middle/50%
         self.current_percentile = 50
         # img to map to is square, with width(smallest since portrait layout)
